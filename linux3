@@ -1,0 +1,10 @@
+Setting for iptables
+# sudo iptables -P FORWARD DROP
+# sudo iptables -I FORWARD -p tcp -d (ip DNS нашего) --dport 53 -i (local port / порт смотрящий в сеть) -j ACCEPT  
+# sudo iptables -I FORWARD -p tcp -d (ip DNS нашего) --dport 53 -i (inet port / порт смотрящий в инет) -j ACCEPT
+# sudo iptables -I FORWARD -p tcp -d (ip сети сайта) --dport 80 -i (local port / порт смотрящий в сеть) -j ACCEPT 
+# sudo iptables -I FORWARD -p tcp -d (ip сети сайта) --dport 80 -i (inet port / порт смотрящий в инет) -j ACCEPT
+# sudo iptables -I FORWARD -p tcp -d (ip сети сайта) --dport 443 -i (local port / порт смотрящий в сеть) -j ACCEPT 
+# sudo iptables -I FORWARD -p tcp -d (ip сети сайта) --dport 443 -i (inet port / порт смотрящий в инет) -j ACCEPT
+# sudo iptables -I FORWARD -s (ip сети сайта) -i (local port / порт смотрящий в сеть) -j ACCEPT  
+# sudo iptables -I FORWARD -s (ip сети сайта) -i (inet port / порт смотрящий в инет) -j ACCEPT  
