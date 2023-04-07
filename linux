@@ -1,0 +1,113 @@
+The first. Первое
+Setup hosts name with use table / Необходимо установить названия hostname в соотетствии с таблицой
+# nano /etc/hostname/
+# nano /etc/hosts/
+Для проверки
+#hostname <заданный ранее hostname>
+
+
+Second. / Второе
+Set static IP for interfaces. / Устанавливаем статические IP адресса для интерфейсов  
+
+# nano etc/network/interface
+    auto ens36
+    iface ens36 inet static
+    address 192.168.0.1
+    netmask 255.255.255.0
+
+Restart service / перезагружаем службу
+# systemctl restart networking
+
+Active forward / включим маршрутизацию: (AF) (ISP)
+# nano /etc/sysctl.conf
+  ....
+  net.ipv4.ip_forward=1   uncoment this / раскоментировать эту строчку
+  ...
+
+Accept new rule / применить  новое правило
+# sudo sysctl -p
+
+Third. / Третье
+Set static route / задаем статическую маршрутизацию: (AF) (ISP)
+
+# nano etc/network/interface/
+  ...
+  post-up ip route add "subnet / подсеть"/prefix(префикс) via next ip port / ближайший портIP 
+  ...
+
+Rule for iptables / задаем правило для фаервола: (AF) (ISP)
+
+Create new file rc.local / создаём файл rc.local 
+# nano /etc/rc.local
+sudo iptables -t nat -A POSTROUTING -o eth0(port what see internet / порт смотрящий в интернет) -j MASQUERADE
+
+# chmod +x /etc/rc.local (AF) (ISP)
+
+# crontab -e (AF) (ISP)
+* * * * * /etc/rc.local
+
+For static ip with static name / задаем соответствие ip к name
+(CLIENTS)
+# nano /etc/hosts
+*IP сайта*       *Название*
+
+/////////// DNS: (for static inet)
+/////////// nano /etc/resolve.conf
+/////////// nameserver 8.8.8.8 
+
+Fourth. / Четвертое
+
+# nano /etc/hosts
+192.168.0.1 ISP
+(IP inet / ip интернета)	(HOSTNAME / hostname)
+
+Allow 53 port for work dns / разрешение 53 порта
+# iptables -A INPUT -p udp --dport 53 -j ACCEPT 
+# iptables -A OUTPUT -p udp --dport 53 -j ACCEPT 
+
+setup bind9 / установим bind9 (ISP) 
+# apt install bind9 (for required) 
+open directory bind9 / откроем директорию bind9
+# cd /etc/bind 
+
+Create new file with new zone dns / создадим новый файл конфигурации dns
+# nano named.conf.local
+
+zone "ISP" IN {
+        type master;
+        file "/etc/bind/forward.ISP";
+        allow-update { none; };
+        allow-transfer { 8.8.8.8; 77.88.8.8; };
+};
+
+# cp db.local forward.ISP
+# nano forward.ISP
+
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800                        
+@       IN      SOA     ISP.            root.ISP. (
+                         ^                    ^
+                       <change it for ur hostname>
+                       
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      ISP.
+@       IN      A       192.168.80.128 <set ur inet ip>
+
+ns1     IN      A       192.168.80.128 <set ur inet ip>
+mail    IN      A       192.168.80.128 <set ur inet ip>
+www     IN      A       192.168.80.128 <set ur inet ip>
+
+For test / для проверки
+ 
+# named-checkconf
+
+
+# nano /etc/resolv.conf
+# nameserver 192.168.80.128 
