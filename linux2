@@ -1,0 +1,26 @@
+Install isc-dhcp-server
+# apt-get install isc-dhcp-server
+
+Setup interfaces
+#nano /etc/default/isc-dhcp-server
+INTERFACESv4=" <interfaces interfaces2 interfaces3 interfaces4> "
+
+Set settings DHCP: 
+# nano /etc/dhcp/dhcpd.conf 
+
+subnet <network> netmask x.x.x.x {
+        range x.x.x.x x.x.x.x;
+        option routers x.x.x.x; (IP GATEWAY)
+        option domain-name-servers x.x.x.x; (DNS)
+	// interface ens33;(which one interfaces)
+        // host CL1 {
+        					  //  hardware ethernet 00:0c:29:9a:36:02;
+                    //  fixed-address {172.16.0.99;}
+}
+
+For clients 
+# nano /etc/network/interfaces
+  ...
+  auto ens33
+  iface ens33 inet dhcp
+  ...
