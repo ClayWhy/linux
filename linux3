@@ -8,3 +8,15 @@ Setting for iptables
 # sudo iptables -I FORWARD -p tcp -d (ip сети сайта) --dport 443 -i (inet port / порт смотрящий в инет) -j ACCEPT
 # sudo iptables -I FORWARD -s (ip сети сайта) -i (local port / порт смотрящий в сеть) -j ACCEPT  
 # sudo iptables -I FORWARD -s (ip сети сайта) -i (inet port / порт смотрящий в инет) -j ACCEPT  
+
+
+ISP
+# apt install ntp
+# iptables -A OUTPUT -p udp --dport 123 -j ACCEPT
+# iptables -A INPUT -p udp --sport 123 -j ACCEPT
+
+CLI
+# apt install ntp
+# nano /etc/ntp.conf
+# server [IP] prefer iburst
+# ntpq -p
