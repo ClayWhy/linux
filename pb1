@@ -1,0 +1,47 @@
+---
+- hosts: s1_srv
+  gather_facts: no
+  tasks:
+    - name: Create domain user
+      win_user:
+        name: my_service
+        password: my_password
+        groups:
+          - Administrators
+      become: yes
+
+    - name: Create shared directory
+      win_share:
+        name: "repo"
+        path: "C:\\shares\\repo"
+        description: "Shared repository directory"
+        full: "Everyone:F"
+        read: "Everyone:R"
+      become: yes
+
+- hosts: s1_cli
+  gather_facts: no
+  tasks:
+    - name: Mount shared directory
+      win_mount:
+        path: U:
+        share: \\s1_srv\repo
+        username: "my_service"
+        password: "my_password"
+        fstype: cifs
+        state: present
+        persist: yes
+      become: yes
+
+    - name: Install software using Chocolatey
+      win_chocolatey:
+        name:
+          - notepadplusplus
+          - sublimetext
+          - 7zip
+          - phpstorm
+          - googlechrome
+          - firefox
+        state: present
+        source: "http://192.168.4.252:8081/repository/chocolatey-group/"
+      become: yes
