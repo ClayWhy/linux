@@ -1,0 +1,46 @@
+- name: Deploy shared SMB repository
+  hosts: s1_srv
+  become: yes
+  tasks:
+    - name: Create shared directory
+      win_file:
+        path: C:\shared
+        state: directory
+      register: result
+
+    - name: Share directory
+      win_share:
+        name: repository
+        path: C:\shared
+        description: "Shared software repository"
+        full: everyone
+        read: everyone
+        change: my_service
+        state: present
+      when: result.changed
+
+- name: Mount SMB share as network drive
+  hosts: s1_cli
+  become: yes
+  tasks:
+    - name: Mount network drive
+      win_map_network_drive:
+        name: \\s1_srv\repository
+        letter: U
+        username: "domain\my_service"
+        password: "mypassword"
+        persist: yes
+
+- name: Install software from SMB share using Chocolatey
+  hosts: s1_cli
+  become: yes
+  tasks:
+    - name: Install software using Chocolatey
+      win_chocolatey:
+        name: "{{ item }}"
+        source: "http://192.168.4.252:8081/repository/chocolatey-group/"
+        state: present
+      with_items:
+        - PhpStorm
+        - GoogleChrome
+        - MozillaFirefox
