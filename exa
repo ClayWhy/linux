@@ -103,6 +103,17 @@ apt update
 
 Билет 7, как 2 только в [] пишется кто имеет доступ
 
+useradd crazysysadmin -m -G users
+Затем нужно добавить пользователя в Samba:
+
+smbpasswd -a crazysysadmin
+И активировать его:
+
+smbpasswd -e crazysysadmin
+Если нужно поменять пароль пользователю samba, то это можно сделать следующей командой:
+
+smbpasswd crazysysadmin
+
 [share1]
  admin users = <user>
 
