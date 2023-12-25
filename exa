@@ -103,7 +103,7 @@ _________________________
 
 sudo apt update && sudo apt upgrade -y
 result=$?
-echo "Result: $result" » /path/to/log/file.log
+echo "Result: $result" >> /path/to/log/file.log
 
 exit $result
 -------------------------
