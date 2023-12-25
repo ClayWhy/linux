@@ -53,7 +53,7 @@ smbpasswd -a shareadmin
 smbpasswd -e shareadmin
 
 Билет 3
-скип)
+ниже
 
 Билет 4
 Создайте резервные копии файлов:
@@ -98,8 +98,57 @@ apt update
 
 выставить время
 * * * * * <путь до файла>
+_________________________
+#!/bin/bash
+
+sudo apt update && sudo apt upgrade -y
+result=$?
+echo "Result: $result" » /path/to/log/file.log
+
+exit $result
+-------------------------
+
+#!/bin/bash
+
+sudo apt update && sudo apt upgrade -y
+result=$?
+echo "Result: $result" » /path/to/log/file.log
+
+exit $result
 
 Билет 6
+Настройте crontab для выполнения скрипта, который будет отправлять отчет по выполненным задачам на указанный электронный адрес каждую неделю в понедельник в 8 утра.
+*** возможный вариант решения
+sudo apt install mailutils 
+создаем файл скрипта и текстовый файл отчет 
+СКРИПТ (1 ВАРИАНТ)
+#!/bin/bash
+
+# Путь к файлу с отчетом задачи
+REPORT_FILE="/путь/к/файлу/отчета"
+
+# Адрес электронной почты для отправки отчета
+TO_EMAIL="your_email@gmail.com"
+
+# Отправка отчета по электронной почте
+mail -s "Отчет по выполненным задачам" "$TO_EMAIL" < "$REPORT_FILE"
+
+СКРИПТ (2 ВАРИАНТ)
+
+#!/bin/bash
+
+# Создаем отчет в файле report.txt
+echo "Здесь ваш отчет о выполненных задачах" > report.txt
+
+# Отправляем отчет по электронной почте
+cat report.txt | mail -s "Отчет о выполненных задачах" your_email@gmail.com
+
+chmod +x task_report.sh ------Выдаем права скрипту
+
+Настраиваем кронтаб 
+crontab -e
+
+0 8 * * 1 /путь/к/скрипту/task_report.sh
 
 Билет 7, как 2 только в [] пишется кто имеет доступ
 
@@ -131,3 +180,75 @@ host hl <имя хоста> {
                 fixed-address 172.16.0.14; (какой статический ип ему дать)
         }
 
+
+DNS билет 3
+
+В командной строке терминала введите следующую команду для установки DNS:
+sudo apt install bind9
+
+sudo apt install dnsutils - лишним не будет
+
+$ sudo nano /etc/bind/named.conf.options
+Замените адрес пересылки (по умолчанию 0.0.0.0) на IP-адрес 8.8.8.8.
+        forwarders {
+              8.8.8.8;
+         };
+
+Чтобы добавить зону DNS в BIND9, превратив BIND9 в основной сервер, сначала отредактируйте /etc/bind/named.conf.local:
+zone "example.com" {
+    type master;
+    file "/etc/bind/db.example.com";
+};
+
+Теперь используйте существующий файл зоны в качестве шаблона для создания /etc/bind/db.example.comфайла:
+sudo cp /etc/bind/db.local /etc/bind/db.example.com
+
+Отредактируйте новый файл зоны /etc/bind/db.example.comи измените его localhost.на полное доменное имя вашего сервера, оставив дополнительное имя .в конце. Измените 127.0.0.1IP-адрес сервера имен и root.localhostдействительный адрес электронной почты, но с .вместо обычного @символа, снова оставив .в конце. Измените комментарий, указав домен, для которого предназначен этот файл.
+Создайте запись A для базового домена example.com. Кроме того, создайте запись A для ns.example.comсервера имен в этом примере:
+;
+; BIND data file for example.com
+;
+$TTL    604800
+@       IN      SOA     example.com. root.example.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+@       IN      NS      ns.example.com.
+@       IN      A       192.168.1.10
+@       IN      AAAA    ::1
+ns      IN      A       192.168.1.10
+
+После внесения изменений в файл зоны необходимо перезапустить BIND9, чтобы изменения вступили в силу:
+sudo systemctl restart bind9.service
+Теперь, когда зона настроена и преобразует имена в IP-адреса, необходимо добавить обратную зону , чтобы позволить DNS преобразовывать адрес в имя.
+Отредактируйте /etc/bind/named.conf.localи добавьте следующее:
+zone "1.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.192";
+};
+
+Замените 1.168.192первыми тремя октетами любой сети, которую вы используете. Кроме того, назовите файл зоны /etc/bind/db.192соответствующим образом. Он должен соответствовать первому октету вашей сети.
+Теперь создайте /etc/bind/db.192файл:
+sudo cp /etc/bind/db.127 /etc/bind/db.192
+
+Следующее редактирование /etc/bind/db.192изменит те же параметры, что и /etc/bind/db.example.com:
+;
+; BIND reverse data file for local 192.168.1.XXX net
+;
+$TTL    604800
+@       IN      SOA     ns.example.com. root.example.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      ns.
+10      IN      PTR     ns.example.com.
+
+После создания файла обратной зоны перезапустите BIND9:
+sudo systemctl restart bind9.service
+
+ Проверка  sudo named-checkconf
