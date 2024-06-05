@@ -23,6 +23,7 @@
       systemctl enable --now frr.service
         vtysh
         conft
+        ip router-id x.x.x.x
         router ospf
         network 10.1.1.0/30 area 10
         network 192.168.100.0/26 area 10
@@ -33,3 +34,14 @@
 
     3) Настройке автоматическое распределение ip адрессов
         а) Сделать резервацию для hqr-srv 
+            apt install isc-dhcp-server
+            
+            nano /etc/default/isc-dhcp-server
+              interfacesv4="XX"
+
+            nano /etc/dhcp/dhcpd.conf
+              subnet 192.168.100.0 netmask 255.255.255.192 {
+                option routers 192.168.100.1;
+                option domain-name-servers 8.8.8.8;
+                range 192.168.100.1 192.168.100.40;
+              }
