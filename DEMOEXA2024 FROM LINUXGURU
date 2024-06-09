@@ -41,7 +41,55 @@
 
             nano /etc/dhcp/dhcpd.conf
               subnet 192.168.100.0 netmask 255.255.255.192 {
-                option routers 192.168.100.1;
-                option domain-name-servers 8.8.8.8;
+                option routers 192.168.100.21;
                 range 192.168.100.1 192.168.100.40;
               }
+            host HQ-SRV {
+              hardware ethernet
+              fixed address
+            }
+
+     4) Настройте локальные учетные записи
+        su -l 
+        useradd Admin 
+        passwd Admin (и так с остальными) 
+        usermod -aG sudo Admin (если пользователя нужно добавить в sudo) 
+        nano /etc/passwd (для проверки создания пользователя)
+
+     5) Измерьте пропускную способность между двумя узлами hq-r isp по средствам утилиты iperf 3.
+          apt install iperf3
+          На ISP
+            iperf3 -s
+          На HQ-R
+            iperf3 -c 10.1.1.1
+
+      6) Составьте backup скрипты для сохранения конфигурации сетевых устройств, а именно HQ-R BR-R.
+          mkdir /etc/back-up-save
+          nano /etc/back-up-save/script.sh
+            #!/bin/bash
+            DATE=$(date +%Y-%m-%d_%H-%M)
+            cp /etc/frr/frr.conf /etc/back-up-save/frr.conf-$DATE
+         
+          chmod +x script.sh
+          crontab -e
+          * * * * * /etc/back-up-save/script.sh
+
+      7) Настройте подключение по SSH для удаленного конфигурирования устройства HQ-SRV по порту 2222. Учтите что вам необзодпмо перенаправить трафик.
+          apt install openssh-server
+          systemctl enable ssh
+          nano /etc/ssh/sshd_config
+          Port 2222
+          PermitRootLogin no
+          PasswordAuthentication yes
+          закрываем файл.
+          systemctl restart ssh
+          ssh student@192.168.1.2 -p 2222
+////////////////////////////////////////////////
+sudo iptables -t nat -A PREROUTING -p tcp --dport 2222 -j DNAT --to-destination <IP_HQ-SRV>:2222
+sudo iptables -A FORWARD -p tcp -d <IP_HQ-SRV> --dport 2222 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+sudo iptables-save
+////////////////////////////////////////////////
+
+      8) Настройте контроль доступа до HQ-SRV по SSH со всех кроме CLI
+          nano /etc/ssh/sshd_config
+          AllowUsers student@192.168.0.1 student@192.168.0.140 student@192.168.0.129 (вводите ip и пользователя всех устройств кроме CLI)   
