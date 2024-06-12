@@ -153,7 +153,7 @@ sudo iptables-save
             	cp /etc/bind/db.127 /etc/bind/branch.db
             	cp /etc/bind/db.127 /etc/bind/0.db
 
-              ![hq.db](https://i.imgur.com/kr0I2jk.png)
+![hq.db](https://i.imgur.com/kr0I2jk.png)
               
 
               
