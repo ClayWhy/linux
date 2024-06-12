@@ -158,7 +158,25 @@
 ![hq.db](https://i.imgur.com/kr0I2jk.png)
 ![brahch.db](https://i.imgur.com/Uik41EH.png)
 ![0.db](https://i.imgur.com/v8i88cP.png)
- 	
-              
 
+	2)  Настройте синхронизацию времени между сетевыми устройствами по протоколу NTP.
+		а. В качестве сервера должен выступать роутер HQ-R
+		   со стратумом 5
+		Ь. Используйте Loopback интерфейс на HQ-R, как
+		   источник сервера времени
+		с. Все остальные устройства и сервера должны
+		   синхронизировать свое время с роутером HQ-R
+		d. Все устройства и сервера настроены на московский
+		   часовой пояс (UTC +3)
+
+		---HQ-R---
+     		apt install chrony
+       			nano /etc/chrony/chrony.conf
+				server 127.0.0.1 iburst prefer
+	   			hwtimestamp *
+	      			local stratum 5
+		 		allow all
+    		--client-
+      			nano /etc/chrony/chrony.conf
+	 			server 10.1.1.2 iburst prefer
               
