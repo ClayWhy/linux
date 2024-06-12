@@ -156,8 +156,8 @@
             	cp /etc/bind/db.127 /etc/bind/0.db
 
 ![hq.db](https://i.imgur.com/kr0I2jk.png)
-![brahch.db](https://imgur.com/ff2e9cfd-2432-4795-91f1-077a32717e5a)
-![hq.db](https://imgur.com/30a280e8-b7a8-44cc-85ca-8c2e8471cc45)
+![brahch.db](https://imgur.com/ff2e9cfd-2432-4795-91f1-077a32717e5a](https://i.imgur.com/Uik41EH.png)
+![0.db](https://imgur.com/30a280e8-b7a8-44cc-85ca-8c2e8471cc45](https://i.imgur.com/v8i88cP.png)
  	
               
 
