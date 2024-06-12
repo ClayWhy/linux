@@ -28,7 +28,17 @@
         network 10.1.1.0/30 area 10
         network 192.168.100.0/26 area 10
         do wr
-
+????????????????????????????????????????????
+vtysh
+conf t
+router ospf
+interface Tunnel1
+ip ospf network broadcast 
+end
+do wr
+exit
+systemctl restart frr
+????????????????????????????????????????????
       a) Составьте топологию сети L3
           Сделать логическую схему сети
 
@@ -84,6 +94,7 @@
           закрываем файл.
           systemctl restart ssh
           ssh student@192.168.1.2 -p 2222
+          post-up iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 2222
 ////////////////////////////////////////////////
 sudo iptables -t nat -A PREROUTING -p tcp --dport 2222 -j DNAT --to-destination <IP_HQ-SRV>:2222
 sudo iptables -A FORWARD -p tcp -d <IP_HQ-SRV> --dport 2222 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
@@ -93,3 +104,56 @@ sudo iptables-save
       8) Настройте контроль доступа до HQ-SRV по SSH со всех кроме CLI
           nano /etc/ssh/sshd_config
           AllowUsers student@192.168.0.1 student@192.168.0.140 student@192.168.0.129 (вводите ip и пользователя всех устройств кроме CLI)   
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Модуль 2
+      1) Настройте DNS-сервер на сервере HQ-SRV:
+            а. На DNS сервере необходимо настроить 2 зоны
+               Зона hq.work, также не забудьте настроить обратную зону.
+               ___________________________________________
+               |  Имя            | Тип записи | Адрес    |
+               | hq-r.hq.work    |   A, PTR   | IP-адрес |
+               | hq-srv.hq.work  |   A, PTR   | IP-адрес |
+               -------------------------------------------
+
+              3oнa branch.work
+               ______________________________________________
+               |  Имя               | Тип записи | Адрес    |
+               | br-r.branch.work   |   A, PTR   | IP-адрес |
+               | br-srv.branch.work |   A        | IP-адрес |
+               ----------------------------------------------
+            nano /etc/bind/named.conf.options
+                вместо 0.0.0.0 пишем 8.8.8.8
+                listen-on-v6 { none; };
+                listen-on { any; };
+
+            nano /etc/resolv.conf
+                  search hq.work 
+                  search branch.work
+                  nameserver 8.8.8.8
+
+            nano  /etc/bind/named.conf.local
+                zone "hq.work" {
+	                    type master;
+	                    file "/etc/bind/hq.db";
+                };
+
+                zone "branch.work" {
+	                    type master;
+	                    file "/etc/bind/branch.db";
+                };
+
+                zone "1.168.192.in-addr.arpa" {
+	                    type master;
+	                    file "/etc/bind/0.db";    - то что 1.168.192 это ваш ип только наоборот без последнего актета.
+                };
+
+              cp /etc/bind/db.127 /etc/bind/hq.db
+            	cp /etc/bind/db.127 /etc/bind/branch.db
+            	cp /etc/bind/db.127 /etc/bind/0.db
+
+              ![alt text](https://i.imgur.com/kr0I2jk.png)
+              
+
+              
