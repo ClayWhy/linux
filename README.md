@@ -180,3 +180,44 @@
       			nano /etc/chrony/chrony.conf
 	 			server 10.1.1.2 iburst prefer
               
+	5) Сконфигурируйте веб-сервер LMS Apache на сервере BR-SRV:
+		a. На главной странице должен отражаться номер места
+		b. Используйте базу данных mySQL
+		c. Создайте пользователей в соответствии с таблицей, пароли у всех пользователей «P@ssw0rd»
+		
+  		apt install apache2 -y
+    		apt install mariadb-server
+	  		Заходим на оф.сайт moodle -> legacy realeases - > moodle 4.0.12 и качаем tgz
+	    		Переходим в раздел куда скачался файл /root/Downloads
+      		tar -xzvf moodle
+		cp -r /moodle/ /var/www
+  		cd /var/www/
+    		rm -r /html/
+      		cp -r /moodle/ /html/
+    		chmod 777 /var/www/
+      		rm -r moodle/
+			apt install php -y
+	  		apt install php-curl
+	  		apt install php-zip
+     			apt install php-mysqli
+			apt install php-xml
+     			apt install php-mbstring
+			apt install php-gd
+   			apt intstall php-intl
+      			apt install php-xmlrpc
+	 		apt install php-soap
+			systemctl restart apache2
+			
+  		mysql -u root -p
+    			Test123
+       		CREATE USER 'moodle'@'localhost' IDENTIFIED BY 'password123';
+	 	GRANT ALL PRIVILEGES ON *.* TO 'moodle'@'localhost' WITH GRANT OPTION;
+		FLUSH PRIVILEGES;
+
+  		Далее заходим на 127.0.0.1 и проходим все пункты. Если возникают ошибки то фиксим :)
+
+      		Создать пользователей     -> 1. Администрирование -> 2. Пользователи -> 3. Добавить пользователя
+		Создать глобальную группу -> 1. Администрирование -> 2. Пользователи -> 3. Глобальные группы -> 4. Добавить глобальную группу
+
+    		
+       			     
