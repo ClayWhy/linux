@@ -104,7 +104,7 @@
 
 	8) Настройте контроль доступа до HQ-SRV по SSH со всех кроме CLI
 		          nano /etc/ssh/sshd_config
-	    			sudo iptables -I INPUT -p tcp --dport 2222 -j DROP
+	    			sudo iptables -I OUTPUT -p tcp --dport 2222 -j DROP
 		          AllowUsers student@192.168.0.1 student@192.168.0.140 student@192.168.0.129 (вводите ip и пользователя всех устройств кроме CLI)   
 
 
