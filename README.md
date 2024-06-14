@@ -175,8 +175,10 @@
 		   синхронизировать свое время с роутером HQ-R
 		d. Все устройства и сервера настроены на московский
 		   часовой пояс (UTC +3)
-
-		---HQ-R---
+		
+  		timedatectl set-timezone Europe/Moscow
+		
+  		---HQ-R---
      		apt install chrony
        			nano /etc/chrony/chrony.conf
 				server 127.0.0.1 iburst prefer
