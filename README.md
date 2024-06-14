@@ -66,6 +66,7 @@
         		passwd Admin (и так с остальными) 
 		        usermod -aG sudo Admin (если пользователя нужно добавить в sudo) 
 		        nano /etc/passwd (для проверки создания пользователя)
+	 		useradd -d /home/newuser01 -m -s /bin/bash newuser01
 
      	5) Измерьте пропускную способность между двумя узлами hq-r isp по средствам утилиты iperf 3.
 		          apt install iperf3
