@@ -156,6 +156,11 @@
             	cp /etc/bind/db.127 /etc/bind/branch.db
             	cp /etc/bind/db.127 /etc/bind/0.db
 
+      		-------------
+		перед этим заполнить резольв nameserver ip hqr-srv
+  		chattr +i /etc/resolv.conf
+  		-------------
+
 ![hq.db](https://i.imgur.com/kr0I2jk.png)
 ![brahch.db](https://i.imgur.com/Uik41EH.png)
 ![0.db](https://i.imgur.com/v8i88cP.png)
