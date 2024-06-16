@@ -227,6 +227,49 @@
 
       		Создать пользователей     -> 1. Администрирование -> 2. Пользователи -> 3. Добавить пользователя
 		Создать глобальную группу -> 1. Администрирование -> 2. Пользователи -> 3. Глобальные группы -> 4. Добавить глобальную группу
-
-    		
-       			     
+  
+	6)Запустите сервис MediaWiki используя docker на сервере HQ-SRV.
+    		apt-get install -y docker-compose
+		systemctl enable --now docker
+		usermod student -aG docker
+		cd /home/student
+		touch wiki.yml
+  	-------------------------------------------------------------------------------
+	version: '3'
+	services:
+  	   mediawiki:
+             image: mediawiki
+             restart: always
+             ports:
+              - 8080:80
+             links:
+             - database
+             container_name: wiki
+             volumes:
+      - images:/var/www/html/images
+	# Сначала устанавливаем вручную до конца, потом убираем комментарий
+	#      - ./LocalSettings.php:/var/www/html/LocalSettings.php
+ 	 database:
+            image: mariadb
+            container_name: mariadb
+            restart: always
+             environment:
+               MYSQL_DATABASE: mediawiki
+               MYSQL_USER: wiki
+               MYSQL_PASSWORD: DEP@ssw0rd
+               MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+               TZ: Asia/Yekaterinburg
+            volumes:
+               - db:/var/lib/mysql
+	volumes:
+  	images:
+  	db:
+	-------------------------------------------------------------------------------	    
+ docker-compose -f wiki.yml up -d
+ После переходим в браузер и пишем 127.0.0.1
+docker exec -it mariadb bash
+hostname -i
+Если все работает и у вас установился медия то расскоменчиваем
+# Сначала устанавливаем вручную до конца, потом убираем комментарий
+#      - ./LocalSettings.php:/var/www/html/LocalSettings.php
+Перезагружаем  docker-compose -f wiki.yml up -d
