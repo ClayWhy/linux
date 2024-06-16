@@ -265,11 +265,12 @@
   	images:
   	db:
 	-------------------------------------------------------------------------------	    
- docker-compose -f wiki.yml up -d
- После переходим в браузер и пишем 127.0.0.1
-docker exec -it mariadb bash
-hostname -i
-Если все работает и у вас установился медия то расскоменчиваем
-# Сначала устанавливаем вручную до конца, потом убираем комментарий
-#      - ./LocalSettings.php:/var/www/html/LocalSettings.php
-Перезагружаем  docker-compose -f wiki.yml up -d
+ 	docker-compose -f wiki.yml up -d
+	 После переходим в браузер и пишем 127.0.0.1
+	docker exec -it mariadb bash
+	hostname -i
+	Если все работает и у вас установился медия то расскоменчиваем
+	# Сначала устанавливаем вручную до конца, потом убираем комментарий
+	#      - ./LocalSettings.php:/var/www/html/LocalSettings.php
+	Перезагружаем  docker-compose -f wiki.yml up -d
+	
